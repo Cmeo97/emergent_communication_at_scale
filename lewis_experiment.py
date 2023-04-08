@@ -506,7 +506,7 @@ class LewisExperiment(jaxline_ckpt.ExperimentWithCheckpointing):
         if sum_scalars is None:
           sum_scalars = scalars
         else:
-          sum_scalars = jax.tree_multimap(jnp.add, scalars, sum_scalars)
+          sum_scalars = jax.tree_map(jnp.add, scalars, sum_scalars)
 
         # Computes message statistics. As it is independent of the listener,
         # we here arbitrary take the last listener.
@@ -543,7 +543,7 @@ class LewisExperiment(jaxline_ckpt.ExperimentWithCheckpointing):
     if ensemble_type == 'vote':
       probs = [x.probs for x in predictions]
       # Stacks leaves of probs, which can be a list of dictionaries for classif.
-      stacked_pred = jax.tree_multimap(lambda *vals: np.stack(vals, axis=-1),
+      stacked_pred = jax.tree_map(lambda *vals: np.stack(vals, axis=-1),
                                        *probs)  # [B, F, listeners]
       avg_prediction = jax.tree_map(lambda x: jnp.mean(x, axis=-1),
                                     stacked_pred)  # [B, F]
@@ -582,11 +582,12 @@ class LewisExperiment(jaxline_ckpt.ExperimentWithCheckpointing):
 
     # Computes edit distance between messages from different speakers.
     edit_distance = []
-    message_per_games = np.stack(messages, axis=1)  # [n_games, n_speaker, T]
-    for message in message_per_games:
+    message_per_games = np.stack(messages, axis=0)[0]  # [n_games, n_speaker, T]
+    #for message in message_per_games:
       # These messages are from the same game, and thus encode the same concept.
-      edit_dist = language_measures.edit_dist(message)
-      edit_dist = np.mean(edit_dist)
-      edit_distance.append(edit_dist)
+    edit_dist = language_measures.edit_dist(message_per_games)
+    edit_dist = np.mean(edit_dist)
+    edit_distance.append(edit_dist)
+    logging.info('edit_distance mean %s', np.mean(edit_distance))
 
     return dict(edit_distance=np.mean(edit_distance))

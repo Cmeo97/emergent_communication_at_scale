@@ -25,6 +25,7 @@ from jaxline import utils
 from ml_collections import config_dict
 import numpy as np
 import rlax
+import optax
 
 
 def _maybe_resolve(entry):
@@ -81,10 +82,10 @@ def update_target_params(
 ) -> hk.Params:
   """Maybe update target params."""
 
-  new_target_rl_params = rlax.incremental_update(
+  new_target_rl_params = optax.incremental_update(
       new_tensors=rl_params,
       old_tensors=target_rl_params,
-      tau=1 - target_network_update_ema,
+      step_size=1 - target_network_update_ema,
   )
 
   return new_target_rl_params

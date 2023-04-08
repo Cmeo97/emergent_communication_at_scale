@@ -31,7 +31,7 @@ def get_config(sweep='debug'):
   config.training_steps = int(2e5)
 
   # Define global storage folder (ckpt, logs etc.)
-  config.checkpoint_dir = '/tmp/cidre_ckpts'
+  config.checkpoint_dir = 'emergent_communication_at_scale/ckpt/'
 
   # Basic jaxline logging options
   config.interval_type = 'secs'
