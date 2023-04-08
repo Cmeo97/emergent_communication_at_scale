@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+emcom_datasets/
 # Distribution / packaging
 .Python
 build/
@@ -22,4 +22,4 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-emcom_datsets/
+emcom_datasets/
